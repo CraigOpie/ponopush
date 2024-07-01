@@ -65,7 +65,7 @@ fn main() -> io::Result<()> {
     }
 
     let args: Vec<String> = std::env::args().collect();
-    if args.len() == 4 && args[1] == "config" {
+    if args.len() >= 4 && args[1] == "config" {
         match args[2].as_str() {
             "api.token" => config.api.token = args[3].clone(),
             "api.url" => config.api.url = args[3].clone(),
@@ -78,7 +78,12 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
 
-    run_git_commands(&config, &prompt_path)?;
+    let mut user_message: Option<String> = None;
+    if args.len() >= 3 && args[1] == "-m" {
+        user_message = Some(args[2..].join(" "));
+    }
+
+    run_git_commands(&config, &prompt_path, user_message)?;
 
     Ok(())
 }
@@ -112,7 +117,7 @@ async fn send_openai_request(api_url: &str, api_token: &str, model: &str, max_to
     Ok(response_text)
 }
 
-fn run_git_commands(config: &Config, prompt_path: &Path) -> io::Result<()> {
+fn run_git_commands(config: &Config, prompt_path: &Path, user_message: Option<String>) -> io::Result<()> {
     let repo_root = get_repo_root()?;
     env::set_current_dir(repo_root)?;
 
@@ -129,11 +134,17 @@ fn run_git_commands(config: &Config, prompt_path: &Path) -> io::Result<()> {
     let mut file = fs::File::open(prompt_path)?;
     file.read_to_string(&mut prompt_template)?;
 
-    let prompt = format!("{}{}", prompt_template, diff);
+    let prompt = if let Some(user_message) = user_message {
+        format!("{}\n\n{}", user_message, prompt_template)
+    } else {
+        prompt_template
+    };
+
+    let full_prompt = format!("{}{}", prompt, diff);
 
     let commit_message = tokio::runtime::Runtime::new()
         .unwrap()
-        .block_on(send_openai_request(&config.api.url, &config.api.token, &config.api.model, config.api.max_tokens, &prompt))
+        .block_on(send_openai_request(&config.api.url, &config.api.token, &config.api.model, config.api.max_tokens, &full_prompt))
         .unwrap_or_else(|_| "Failed to get commit message from OpenAI".to_string());
 
     // Write commit message to a temporary file
