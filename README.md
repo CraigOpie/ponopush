@@ -8,6 +8,8 @@ PonoPush is a command-line application designed to assist developers in making b
 - **Customizable Prompts**: Users can customize the prompt used for generating commit messages.
 - **Integration with Default Editor**: Opens the suggested commit message in the user's default editor for review and modification.
 - **Configuration Management**: Allows setting API configurations such as `api.token`, `api.url`, `api.model`, and `api.max_tokens`.
+- **GPG Signing**: Option to sign commits with GPG, controlled by the `gpg.enabled` configuration.
+- **User-Provided Context**: Developers can provide additional context for the AI by using the `-m` flag.
 
 ## Installation
 
@@ -46,6 +48,7 @@ PonoPush is a command-line application designed to assist developers in making b
 
 5. Populate `/etc/ponopush/ponopush.conf` with your desired prompt template. Example:
 
+   <!---
    ```plaintext
    The overall goal for the body of the commit message is to provide a detailed explanation of what the commit does, why the change was made, and any additional context that helps others understand the impact of the change. This can include:
    Reasoning: Explain why the change was necessary. This could involve describing a bug that was fixed, a feature that was added, or a refactor that was done. This should serve as an executive summary focusing on the reason for the changes.
@@ -63,7 +66,7 @@ PonoPush is a command-line application designed to assist developers in making b
    7. The body should be limited in line length to follow PEP 8 styling
    8. Describe what was done and why using bulleted formatting with the '-' character and indent as appropriate
 
-   <!-- Begin example response -->
+   Example response:
    Refactor Commit View and Add New Files
 
    - Refactored 'CommitView.swift' for better layout and functionality to improve user experience and maintainability:
@@ -78,12 +81,12 @@ PonoPush is a command-line application designed to assist developers in making b
       - 'Extensions.swift' for centralizing commonly used extensions
       - 'FileAccess.swift' for handling file access operations
       - 'OpenAPIService.swift' for interacting with the OpenAI API
-   <!-- End example response -->
 
-   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:", "Body:", "Reasoning:", "Details:", "Impact:", nor "Related Issues:" in the response. Don't ever use \` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
+   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:", "Body:", "Reasoning:", "Details:", "Impact:", nor "Related Issues:" in the response. Don't ever use ` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
 
    Git diff:
    ```
+   --->
 
 ## Usage
 
@@ -96,6 +99,7 @@ ponopush config api.token YOUR_API_TOKEN
 ponopush config api.url YOUR_API_URL
 ponopush config api.model YOUR_API_MODEL
 ponopush config api.max_tokens YOUR_API_MAX_TOKENS
+ponopush config gpg.enabled true
 ```
 
 ### Running PonoPush
@@ -107,3 +111,13 @@ ponopush
 ```
 
 The application will generate a commit message, open it in your default editor for review, and commit the changes upon saving the file.
+
+### Providing Additional Context
+
+You can provide additional context for the AI by using the `-m` flag:
+
+```sh
+ponopush -m "User feedback demands that the users are allowed to provide a generic and non-professional reason on why the commit was made so that the AI can use the information to improve its response"
+```
+
+If the `-m` flag is not provided, the application will use the prompt from `/etc/ponopush/ponopush.conf` as usual.
