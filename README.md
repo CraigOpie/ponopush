@@ -80,7 +80,7 @@ PonoPush is a command-line application designed to assist developers in making b
       - 'OpenAPIService.swift' for interacting with the OpenAI API
    <!-- End example response -->
 
-   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:" or "Body:" in the response. Don't ever use \` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
+   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:", "Body:", "Reasoning:", "Details:", "Impact:", nor "Related Issues:" in the response. Don't ever use \` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
 
    Git diff:
    ```
