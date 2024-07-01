@@ -48,7 +48,7 @@ PonoPush is a command-line application designed to assist developers in making b
 
    ```plaintext
    The overall goal for the body of the commit message is to provide a detailed explanation of what the commit does, why the change was made, and any additional context that helps others understand the impact of the change. This can include:
-   Reasoning: Explain why the change was necessary. This could involve describing a bug that was fixed, a feature that was added, or a refactor that was done.
+   Reasoning: Explain why the change was necessary. This could involve describing a bug that was fixed, a feature that was added, or a refactor that was done. This should serve as an executive summary focusing on the reason for the changes.
    Details: Describe what was changed in more detail. Mention specific files or functions that were affected and any important considerations.
    Impact: Highlight the impact of the change. Mention if the change is backward-compatible, if it affects performance, or if it requires other changes elsewhere in the codebase.
    Related Issues: Reference any related issues, bug reports, or tickets that provide additional context for the change.
@@ -59,26 +59,27 @@ PonoPush is a command-line application designed to assist developers in making b
    3. The subject line must use the imperative mood (be an order to do something)
    4. Don't put a period at the end of the Subject Line
    5. Place a blank line between the Subject Line and the Body
-   6. The body should be limited in line length to follow PEP 8 styling
-   7. Describe what was done and why using bulleted formatting with the '-' character and indent as appropriate
+   6. The body should start with a detailed Reasoning section as an executive summary, followed by Details and Impact sections
+   7. The body should be limited in line length to follow PEP 8 styling
+   8. Describe what was done and why using bulleted formatting with the '-' character and indent as appropriate
 
    Example response:
    Refactor Commit View and Add New Files
 
-   - Refactored 'CommitView.swift' for better layout and functionality:
-     - Replaced VStack with HStack for better alignment of elements
-     - In the left pane, replaced 'Commit Changes' with 'Git Diff' for better context
-     - Updated TextField styling for cleaner UI
-     - Modified the alert background color for better visibility
-     - The commit window size has been amended for better screen fit
-     - The window's close functionality has been improved for better user experience
+   - Reasoning: Refactored 'CommitView.swift' for better layout and functionality to improve user experience and maintainability.
+   - Replaced VStack with HStack for better alignment of elements
+   - In the left pane, replaced 'Commit Changes' with 'Git Diff' for better context
+   - Updated TextField styling for cleaner UI
+   - Modified the alert background color for better visibility
+   - The commit window size has been amended for better screen fit
+   - The window's close functionality has been improved for better user experience
 
-   - Created new files for more modular code:
-     - 'Extensions.swift' for centralizing commonly used extensions
-     - 'FileAccess.swift' for handling file access operations
-     - 'OpenAPIService.swift' for interacting with the OpenAI API
+   - Details: Created new files for more modular code:
+   - 'Extensions.swift' for centralizing commonly used extensions
+   - 'FileAccess.swift' for handling file access operations
+   - 'OpenAPIService.swift' for interacting with the OpenAI API
 
-   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:" or "Body:" in the response. Don't ever use ` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
+   The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:" or "Body:" in the response. Don't ever use \` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
 
    Git diff:
    ```
