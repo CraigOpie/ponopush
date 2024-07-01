@@ -1,7 +1,7 @@
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write, Read};
 use std::process::{Command, exit};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::env;
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
@@ -10,6 +10,7 @@ use toml;
 #[derive(Serialize, Deserialize)]
 struct Config {
     api: ApiConfig,
+    gpg: GpgConfig,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -18,6 +19,11 @@ struct ApiConfig {
     url: String,
     model: String,
     max_tokens: i32,
+}
+
+#[derive(Serialize, Deserialize)]
+struct GpgConfig {
+    enabled: bool,
 }
 
 impl Default for Config {
@@ -29,6 +35,9 @@ impl Default for Config {
                 model: "gpt-4o".to_string(),
                 max_tokens: 300,
             },
+            gpg: GpgConfig {
+                enabled: false,
+            }
         }
     }
 }
@@ -62,6 +71,7 @@ fn main() -> io::Result<()> {
             "api.url" => config.api.url = args[3].clone(),
             "api.model" => config.api.model = args[3].clone(),
             "api.max_tokens" => config.api.max_tokens = args[3].parse().unwrap_or(config.api.max_tokens),
+            "gpg.enabled" => config.gpg.enabled = args[3].parse().unwrap_or(config.gpg.enabled),
             _ => eprintln!("Invalid configuration key"),
         }
         save_config(&config_path, &config)?;
@@ -103,6 +113,9 @@ async fn send_openai_request(api_url: &str, api_token: &str, model: &str, max_to
 }
 
 fn run_git_commands(config: &Config, prompt_path: &Path) -> io::Result<()> {
+    let repo_root = get_repo_root()?;
+    env::set_current_dir(repo_root)?;
+
     let git_status = Command::new("git").arg("status").output()?;
     if !String::from_utf8_lossy(&git_status.stdout).contains(".gitignore") {
         Command::new("git").args(&["add", ".gitignore"]).output()?;
@@ -154,11 +167,30 @@ fn run_git_commands(config: &Config, prompt_path: &Path) -> io::Result<()> {
     let mut commit_file = fs::File::create(".git/COMMIT_EDITMSG")?;
     commit_file.write_all(final_message.as_bytes())?;
 
-    Command::new("git").args(&["commit", "-F", ".git/COMMIT_EDITMSG"]).output()?;
+    let commit_args = if config.gpg.enabled {
+        vec!["commit", "-S", "-F", ".git/COMMIT_EDITMSG"]
+    } else {
+        vec!["commit", "-F", ".git/COMMIT_EDITMSG"]
+    };
+
+    Command::new("git").args(&commit_args).output()?;
     Command::new("git").arg("push").output()?;
 
     // Clean up
     fs::remove_file(commit_msg_file)?;
 
     Ok(())
+}
+
+fn get_repo_root() -> io::Result<PathBuf> {
+    let output = Command::new("git")
+        .arg("rev-parse")
+        .arg("--show-toplevel")
+        .output()?;
+    if output.status.success() {
+        let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        Ok(PathBuf::from(path))
+    } else {
+        Err(io::Error::new(io::ErrorKind::NotFound, "Not a git repository"))
+    }
 }
