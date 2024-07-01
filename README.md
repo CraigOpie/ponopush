@@ -63,21 +63,22 @@ PonoPush is a command-line application designed to assist developers in making b
    7. The body should be limited in line length to follow PEP 8 styling
    8. Describe what was done and why using bulleted formatting with the '-' character and indent as appropriate
 
-   Example response:
+   <!-- Begin example response -->
    Refactor Commit View and Add New Files
 
-   - Reasoning: Refactored 'CommitView.swift' for better layout and functionality to improve user experience and maintainability.
-   - Replaced VStack with HStack for better alignment of elements
-   - In the left pane, replaced 'Commit Changes' with 'Git Diff' for better context
-   - Updated TextField styling for cleaner UI
-   - Modified the alert background color for better visibility
-   - The commit window size has been amended for better screen fit
-   - The window's close functionality has been improved for better user experience
+   - Refactored 'CommitView.swift' for better layout and functionality to improve user experience and maintainability:
+      - Replaced VStack with HStack for better alignment of elements
+      - In the left pane, replaced 'Commit Changes' with 'Git Diff' for better context
+      - Updated TextField styling for cleaner UI
+      - Modified the alert background color for better visibility
+      - The commit window size has been amended for better screen fit
+      - The window's close functionality has been improved for better user experience
 
-   - Details: Created new files for more modular code:
-   - 'Extensions.swift' for centralizing commonly used extensions
-   - 'FileAccess.swift' for handling file access operations
-   - 'OpenAPIService.swift' for interacting with the OpenAI API
+   - Created new files for more modular code:
+      - 'Extensions.swift' for centralizing commonly used extensions
+      - 'FileAccess.swift' for handling file access operations
+      - 'OpenAPIService.swift' for interacting with the OpenAI API
+   <!-- End example response -->
 
    The first line should be the subject line, followed by a blank line, followed by the body content. Do not include "Subject:" or "Body:" in the response. Don't ever use \` nor " characters, instead use ' in your response. Your response must never be in a code block. Your response must never reference related issues or issue numbers.
 
